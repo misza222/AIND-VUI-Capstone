@@ -176,21 +176,21 @@ def final_model(input_dim,
     # Main acoustic input
     # Main acoustic input
     input_data = Input(name='the_input', shape=(None, input_dim))
-        # Add convolutional layer
-    conv_1d = Conv1D(filters, kernel_size, 
-                     strides=conv_stride, 
-                     padding=conv_border_mode,
-                     activation='relu',
-                     name='conv1d')(input_data)
+    # Add convolutional layer
+    #conv_1d = Conv1D(filters, kernel_size, 
+    #                 strides=conv_stride, 
+    #                 padding=conv_border_mode,
+    #                 activation='relu',
+    #                 name='conv1d')(input_data)
     # Add batch normalization
-    bn_cnn = BatchNormalization(name='bn_conv_1d')(conv_1d)
+    #bn_cnn = BatchNormalization(name='bn_conv_1d')(conv_1d)
     
-    rnn_input = bn_cnn
+    rnn_input = input_data
     
     for layer_id in range(recur_layers):
         # TODO: Add bidirectional recurrent layer
         rnn = GRU(units, activation='relu',
-                return_sequences=True, implementation=2, name='rnn' + str(layer_id), dropout_W=0.2, dropout_U=0.2)
+                return_sequences=True, implementation=2, name='rnn' + str(layer_id), recurrent_dropout=0.1, dropout=0.1)
         rnn_input = Bidirectional(rnn, merge_mode='concat', name='bidir_rnn' + str(layer_id))(rnn_input)
         
         rnn_input = BatchNormalization(name="bn_rnn" + str(layer_id))(rnn_input)
