@@ -16042,6 +16042,123 @@ Epoch 20/20
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Model-5">Model 5<a class="anchor-link" href="#Model-5">&#182;</a></h3><p>Bidirectional 3 deep RNN model without dropout</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[2]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">sample_models</span> <span class="k">import</span> <span class="n">deep_bidir_rnn_model_with_dropout</span>
+
+<span class="n">model_5</span> <span class="o">=</span> <span class="n">deep_bidir_rnn_model_with_dropout</span><span class="p">(</span><span class="n">input_dim</span><span class="o">=</span><span class="mi">161</span><span class="p">,</span> <span class="c1"># change to 13 if you would like to use MFCC features</span>
+                                            <span class="n">units</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
+                                            <span class="n">recur_layers</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+                                            <span class="n">recurrent_dropout</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+                                            <span class="n">dropout</span><span class="o">=</span><span class="mf">0.0</span>
+                                           <span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+the_input (InputLayer)       (None, None, 161)         0         
+_________________________________________________________________
+bidir_rnn0 (Bidirectional)   (None, None, 400)         434400    
+_________________________________________________________________
+bn_rnn0 (BatchNormalization) (None, None, 400)         1600      
+_________________________________________________________________
+bidir_rnn1 (Bidirectional)   (None, None, 400)         721200    
+_________________________________________________________________
+bn_rnn1 (BatchNormalization) (None, None, 400)         1600      
+_________________________________________________________________
+bidir_rnn2 (Bidirectional)   (None, None, 400)         721200    
+_________________________________________________________________
+bn_rnn2 (BatchNormalization) (None, None, 400)         1600      
+_________________________________________________________________
+time_distributed_1 (TimeDist (None, None, 29)          11629     
+_________________________________________________________________
+softmax (Activation)         (None, None, 29)          0         
+=================================================================
+Total params: 1,893,229
+Trainable params: 1,890,829
+Non-trainable params: 2,400
+_________________________________________________________________
+None
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">train_model</span><span class="p">(</span><span class="n">input_to_softmax</span><span class="o">=</span><span class="n">model_5</span><span class="p">,</span> 
+            <span class="n">pickle_path</span><span class="o">=</span><span class="s1">&#39;model_5.pickle&#39;</span><span class="p">,</span> 
+            <span class="n">save_model_path</span><span class="o">=</span><span class="s1">&#39;model_5.h5&#39;</span><span class="p">,</span> 
+            <span class="n">spectrogram</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">epochs</span><span class="o">=</span><span class="mi">5</span>
+           <span class="p">)</span> <span class="c1"># change to False if you would like to use MFCC features</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Epoch 1/5
+106/106 [==============================] - 1020s - loss: 271.5583 - val_loss: 231.1023
+Epoch 2/5
+106/106 [==============================] - 1023s - loss: 228.8428 - val_loss: 216.7689
+Epoch 3/5
+106/106 [==============================] - 1013s - loss: 221.5986 - val_loss: 204.3941
+Epoch 4/5
+106/106 [==============================] - 1027s - loss: 524.3869 - val_loss: 284.9211
+Epoch 5/5
+106/106 [==============================] - 1026s - loss: 1078.4728 - val_loss: 308.3826
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
 <p><a id='compare'></a></p>
 <h3 id="Compare-the-Models">Compare the Models<a class="anchor-link" href="#Compare-the-Models">&#182;</a></h3><p>Execute the code cell below to evaluate the performance of the drafted deep learning models.  The training and validation loss are plotted for each model.</p>
 
@@ -17068,6 +17185,9 @@ Epoch 20/20
 <p><strong>Question 2:</strong> Describe your final model architecture and your reasoning at each step.</p>
 <p><strong>Answer:</strong></p>
 <p>As Bidirectional RNN architecture with a single layer was suprisingly underperforming, and I thought that there was a potential for improvement I've decided to add another BiRNN to the model, each with BatchNormalization layer to reduce training time. After BiRNNs there is still applied TimeDistributed to learn more complex patterns across RNN outputs.</p>
+<p>At epoch 14 we see traning and validation loss to diverge a bit - sign of overfitting. Dropout could help, but with dropout of 0.1 that I've tried, it diverged even more so I gave up on using dropout for now.</p>
+<p>When training with 3 Bidirectional RNN, terrible underperformance (see model 5), where after epoch 3 losses started to increase dramatically.</p>
+<p>As the model is overfiting, training on more than 20 epochs will most likely extend the gap between training and validation loss.</p>
 
 </div>
 </div>
